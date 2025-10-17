@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Gestionnaire de Classes</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main-css.css">
+    <link rel="stylesheet" href="css/login-css.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Page de connexion -->
+    <div class="login-container" id="loginView">
+        <div class="logo">
+            <h1>🎓 Gestionnaire</h1>
+            <p>Connexion sécurisée</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Formulaire de connexion initial -->
+        <div id="passwordForm">
+            <div class="form-group">
+                <label for="email">📧 Email</label>
+                <input type="email" id="email" placeholder="votre@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="password">🔒 Mot de passe</label>
+                <input type="password" id="password" placeholder="Entrez votre mot de passe" autocomplete="current-password">
+            </div>
+            <button class="login-btn" id="loginBtn">Se connecter</button>
+        </div>
+
+        <!-- Configuration 2FA -->
+        <div id="setup2FAForm" class="hidden">
+            <h3>🔐 Configuration 2FA</h3>
+            
+            <div class="setup-instructions">
+                <ol>
+                    <li>Installez une application d'authentification (Google Authenticator, Authy, etc.)</li>
+                    <li>Scannez le QR code ci-dessous</li>
+                    <li>Entrez le code à 6 chiffres généré</li>
+                </ol>
+            </div>
+
+            <div class="qr-container" id="qrCodeContainer">
+                <div class="loader"></div>
+            </div>
+
+            <div class="secret-code" id="secretCode"></div>
+
+            <div class="form-group">
+                <label for="setupCode">🔢 Code de vérification</label>
+                <input type="text" id="setupCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+            </div>
+
+            <button class="login-btn" id="setupBtn">Activer le 2FA</button>
+            <button class="back-btn" id="cancelSetupBtn">Annuler</button>
+        </div>
+
+        <!-- Vérification 2FA -->
+        <div id="verify2FAForm" class="hidden">
+            <h3>🔐 Authentification à deux facteurs</h3>
+            
+            <div class="alert alert-info">
+                Entrez le code à 6 chiffres de votre application d'authentification
+            </div>
+
+            <div class="form-group">
+                <label for="verifyCode">🔢 Code de vérification</label>
+                <input type="text" id="verifyCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}" autofocus>
+            </div>
+
+            <button class="login-btn" id="verifyBtn">Vérifier</button>
+            <button class="back-btn" id="cancelVerifyBtn">Retour</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config-js.js"></script>
+    <script src="js/auth-js.js"></script>
+</body>
+</html>
