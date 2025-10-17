@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche Élève - Gestionnaire</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/fiche-eleve.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- Le header sera chargé dynamiquement par header.js -->
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="fiche-container">
+            <!-- Bouton retour -->
+            <button class="btn-back" id="backBtn">← Retour au trombinoscope</button>
+            
+            <div class="fiche-title-bar">
+                <h1 class="fiche-title">📋 Fiche Élève</h1>
+                <div class="title-actions">
+                    <button class="btn-save" id="saveBtn">💾 Enregistrer</button>
+                </div>
+            </div>
+
+            <!-- Section Info et Photo -->
+            <div class="fiche-header">
+                <!-- Photo -->
+                <div class="photo-section">
+                    <div class="student-photo" id="studentPhoto">
+                        <div class="student-avatar-large" id="studentAvatarLarge"></div>
+                    </div>
+                </div>
+
+                <!-- Informations -->
+                <div class="info-section">
+                    <div class="form-group">
+                        <label for="studentFirstName">Prénom</label>
+                        <input type="text" id="studentFirstName" placeholder="Prénom">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentLastName">Nom</label>
+                        <input type="text" id="studentLastName" placeholder="Nom">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentBirthdate">Date de naissance</label>
+                        <input type="date" id="studentBirthdate">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes / Observations -->
+            <div class="notes-section">
+                <div class="notes-header">
+                    <h3>📝 Notes / Observations</h3>
+                    <div class="notes-actions">
+                        <button class="btn-new-note" id="newNoteBtn">✏️ Nouvelle note</button>
+                        <button class="btn-save-notes hidden" id="saveNotesBtn">💾 Enregistrer</button>
+                        <button class="btn-cancel-notes hidden" id="cancelNotesBtn">❌ Annuler</button>
+                    </div>
+                </div>
+                
+                <!-- Mode lecture -->
+                <div class="notes-preview" id="notesPreview"></div>
+                
+                <!-- Mode édition -->
+                <div class="notes-editor hidden" id="notesEditor">
+                    <textarea id="notesTextarea" placeholder="Tapez votre note ici..."></textarea>
+                </div>
+            </div>
+
+            <!-- Groupes AP -->
+            <div class="groups-section">
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ap1Checkbox">
+                        <span>AP1</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ap2Checkbox">
+                        <span>AP2</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Gestion (en bas) -->
+            <div class="photo-management-section">
+                <h3>⚙️ Gestion</h3>
+                <div class="photo-actions">
+                    <button class="btn-photo" id="changePhotoBtn">📷 Changer photo</button>
+                    <button class="btn-photo delete" id="deletePhotoBtn">🗑️ Supprimer photo</button>
+                    <button class="btn-photo delete-student" id="deleteStudentBtn">🗑️ Supprimer l'élève</button>
+                    <input type="file" id="photoFileInput" accept="image/jpeg,image/png,image/jpg" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal hidden" id="deleteModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Confirmer la suppression</h3>
+                <span class="close-modal" id="closeDeleteModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cet élève ?</p>
+                <p class="warning-text">⚠️ Cette action est irréversible</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDeleteBtn">Annuler</button>
+                <button class="btn-delete" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/fiche-eleve.js"></script>
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Pas de session, rediriger vers login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✓ Utilisateur authentifié:', session.user.email);
+        }
+
+        // Vérifier l'authentification au chargement
+        checkAuth();
+    </script>
+</body>
+</html>

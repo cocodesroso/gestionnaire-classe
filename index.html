@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de Classes</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Le header sera chargé dynamiquement par header.js -->
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Calendrier -->
+        <div class="calendar-container">
+            <!-- En-tête du calendrier -->
+            <div class="calendar-header">
+                <h2 class="calendar-title" id="calendarTitle">Semaine du...</h2>
+                
+                <div class="calendar-navigation">
+                    <button class="calendar-nav-btn" id="prevWeekBtn">◄ Précédente</button>
+                    <button class="calendar-nav-btn today" id="todayBtn">Aujourd'hui</button>
+                    <button class="calendar-nav-btn" id="nextWeekBtn">Suivante ►</button>
+                    
+                    <div class="date-picker-container">
+                        <label class="date-picker-label" for="datePickerInput">Aller au :</label>
+                        <input type="date" class="date-picker-input" id="datePickerInput">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grille du calendrier -->
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Généré dynamiquement par calendar.js -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/calendar.js"></script>
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Pas de session, rediriger vers login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✓ Utilisateur authentifié:', session.user.email);
+        }
+
+        // Vérifier l'authentification au chargement
+        checkAuth();
+    </script>
+</body>
+</html>

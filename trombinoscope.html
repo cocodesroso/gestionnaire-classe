@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trombinoscope - Gestionnaire</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/trombinoscope.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Le header sera chargé dynamiquement par header.js -->
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="trombinoscope-container">
+            <!-- En-tête avec retour -->
+            <div class="trombinoscope-header">
+                <div class="header-left-group">
+                    <button class="btn-back" id="backBtn" onclick="window.location.href='classes.html'">
+                        ← Classes
+                    </button>
+                    <h1 class="trombinoscope-title" id="classTitle">Classe...</h1>
+                </div>
+                
+                <div class="sort-buttons">
+                    <span class="sort-label">Trier :</span>
+                    <button class="btn-sort" id="sortLastNameBtn" data-order="none">
+                        Nom <span class="sort-icon">⇅</span>
+                    </button>
+                    <button class="btn-sort" id="sortFirstNameBtn" data-order="none">
+                        Prénom <span class="sort-icon">⇅</span>
+                    </button>
+                </div>
+                
+                <div class="filter-buttons">
+                    <span class="filter-label">Afficher :</span>
+                    <label class="radio-filter">
+                        <input type="radio" name="groupFilter" value="all" checked>
+                        <span>Classe</span>
+                    </label>
+                    <label class="radio-filter">
+                        <input type="radio" name="groupFilter" value="ap1">
+                        <span>AP1</span>
+                    </label>
+                    <label class="radio-filter">
+                        <input type="radio" name="groupFilter" value="ap2">
+                        <span>AP2</span>
+                    </label>
+                    <button class="btn-toggle-photos" id="togglePhotosBtn" title="Masquer/Afficher les photos">
+                        👁️
+                    </button>
+                </div>
+                
+                <div class="header-actions-group">
+                    <button class="btn-add-student" id="addStudentBtn">+ Nouvel élève</button>
+                    <button class="btn-import-csv" id="importCsvBtn">📥 Importer CSV</button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                </div>
+            </div>
+
+            <!-- Grille des élèves -->
+            <div class="students-grid" id="studentsGrid">
+                <!-- Les élèves seront chargés dynamiquement -->
+            </div>
+
+            <!-- Message si aucun élève -->
+            <div class="no-students hidden" id="noStudents">
+                <div class="no-students-icon">👥</div>
+                <h3>Aucun élève pour le moment</h3>
+                <p>Commencez par ajouter votre premier élève</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Ajouter/Modifier un élève -->
+    <div class="modal hidden" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouvel élève</h3>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="studentFirstName">Prénom *</label>
+                    <input type="text" id="studentFirstName" placeholder="Ex: Jean" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentLastName">Nom *</label>
+                    <input type="text" id="studentLastName" placeholder="Ex: DUPONT" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentBirthdate">Date de naissance (optionnel)</label>
+                    <input type="date" id="studentBirthdate">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelBtn">Annuler</button>
+                <button class="btn-save" id="saveStudentBtn">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal hidden" id="deleteModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Confirmer la suppression</h3>
+                <span class="close-modal" id="closeDeleteModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cet élève ?</p>
+                <p class="warning-text">⚠️ Cette action est irréversible</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDeleteBtn">Annuler</button>
+                <button class="btn-delete" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Résultat Import CSV -->
+    <div class="modal hidden" id="importResultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📥 Résultat de l'import</h3>
+                <span class="close-modal" id="closeImportResultModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div id="importResultContent"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-save" id="closeImportBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="js/trombinoscope.js"></script>
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Pas de session, rediriger vers login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✓ Utilisateur authentifié:', session.user.email);
+        }
+
+        // Vérifier l'authentification au chargement
+        checkAuth();
+    </script>
+</body>
+</html>
