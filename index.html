@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionnaire de Classes</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Le header sera chargé dynamiquement par header.js -->
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Calendrier -->
+        <div class="calendar-container">
+            <!-- En-tête du calendrier -->
+            <div class="calendar-header">
+                <h2 class="calendar-title" id="calendarTitle">Semaine du...</h2>
+                
+                <div class="calendar-navigation">
+                    <button class="calendar-nav-btn" id="prevWeekBtn">◄ Précédente</button>
+                    <button class="calendar-nav-btn today" id="todayBtn">Aujourd'hui</button>
+                    <button class="calendar-nav-btn" id="nextWeekBtn">Suivante ►</button>
+                    
+                    <div class="date-picker-container">
+                        <label class="date-picker-label" for="datePickerInput">Aller au :</label>
+                        <input type="date" class="date-picker-input" id="datePickerInput">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grille du calendrier -->
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Généré dynamiquement par calendar.js -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Créer/Modifier Événement -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle">Nouvel événement</h3>
+                <span class="close-modal" id="closeEventModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="eventSubject">Matière *</label>
+                    <select id="eventSubject">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="Technologie">Technologie</option>
+                        <option value="PPPE L1">PPPE L1</option>
+                        <option value="PPPE L2">PPPE L2</option>
+                        <option value="PPPE L3">PPPE L3</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventClass">Classe *</label>
+                    <select id="eventClass">
+                        <option value="">-- Sélectionner --</option>
+                        <!-- Les classes seront chargées dynamiquement -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Type de groupe *</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="radio" name="groupType" value="full" checked>
+                            <span>Classe entière</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="radio" name="groupType" value="ap1">
+                            <span>AP1</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="radio" name="groupType" value="ap2">
+                            <span>AP2</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDate">Date *</label>
+                    <input type="date" id="eventDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventTimeSlot">Créneau horaire *</label>
+                    <select id="eventTimeSlot">
+                        <option value="">-- Sélectionner --</option>
+                        <!-- Les créneaux seront chargés dynamiquement -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventNotes">Notes (optionnel)</label>
+                    <textarea id="eventNotes" rows="3" placeholder="Remarques, thème du cours..."></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-delete" id="deleteEventBtn" style="display: none;">Supprimer</button>
+                <button class="btn-cancel" id="cancelEventBtn">Annuler</button>
+                <button class="btn-save" id="saveEventBtn">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal" id="deleteEventModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Confirmer la suppression</h3>
+                <span class="close-modal" id="closeDeleteEventModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cet événement ?</p>
+                <p class="warning-text">⚠️ Cette action est irréversible</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDeleteEventBtn">Annuler</button>
+                <button class="btn-delete" id="confirmDeleteEventBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/calendar.js"></script>
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Pas de session, rediriger vers login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✓ Utilisateur authentifié:', session.user.email);
+        }
+
+        // Vérifier l'authentification au chargement
+        checkAuth();
+    </script>
+</body>
+</html>
