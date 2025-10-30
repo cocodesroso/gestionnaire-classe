@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Post-it - Gestionnaire</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/postit.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Le header sera chargé dynamiquement par header.js -->
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="postit-container">
+            <!-- En-tête -->
+            <div class="postit-header">
+                <h1 class="postit-title">📌 Mes Post-it</h1>
+                <button class="btn-add-postit" id="addPostitBtn">+ Nouveau post-it</button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="postit-filters">
+                <button class="filter-btn active" data-filter="all">Tous</button>
+                <button class="filter-btn" data-filter="todo">À faire</button>
+                <button class="filter-btn" data-filter="done">Terminés</button>
+                <button class="filter-btn" data-filter="urgent">Urgents</button>
+            </div>
+
+            <!-- Grille des post-it -->
+            <div class="postit-grid" id="postitGrid">
+                <!-- Les post-it seront chargés dynamiquement -->
+            </div>
+
+            <!-- Message si aucun post-it -->
+            <div class="no-postit hidden" id="noPostit">
+                <div class="no-postit-icon">📝</div>
+                <h3>Aucun post-it pour le moment</h3>
+                <p>Créez votre premier post-it pour organiser vos tâches</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Ajouter/Modifier Post-it -->
+    <div class="modal" id="postitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouveau post-it</h3>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="postitText">Tâche à faire *</label>
+                    <textarea id="postitText" rows="3" placeholder="Décrivez la tâche..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="postitClass">Classe</label>
+                        <select id="postitClass">
+                            <option value="">Aucune classe</option>
+                            <!-- Les classes seront chargées dynamiquement -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postitGroup">Groupe</label>
+                        <select id="postitGroup">
+                            <option value="full">Classe entière</option>
+                            <option value="ap1">AP1</option>
+                            <option value="ap2">AP2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="postitDeadline">Date d'échéance *</label>
+                    <input type="date" id="postitDeadline">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelBtn">Annuler</button>
+                <button class="btn-save" id="savePostitBtn">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmation Suppression -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Confirmer la suppression</h3>
+                <span class="close-modal" id="closeDeleteModal">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer ce post-it ?</p>
+                <p class="warning-text">⚠️ Cette action est irréversible</p>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDeleteBtn">Annuler</button>
+                <button class="btn-delete" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/postit.js"></script>
+    <script>
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('✓ Utilisateur authentifié:', session.user.email);
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>
